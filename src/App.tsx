@@ -18,7 +18,7 @@ const GIFS = [
   { file: '14 [WALKING].gif', label: 'WALKING' },
 ]
 
-const AUDIO_FILE = '/assets/0001_gran (1).wav'
+const AUDIO_FILE = `${import.meta.env.BASE_URL}assets/0001_gran (1).mp3`
 
 function App() {
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -36,7 +36,7 @@ function App() {
     let loaded = 0
     preloadedImages.current = GIFS.map((gif) => {
       const img = new Image()
-      img.src = `/assets/${gif.file}`
+      img.src = `${import.meta.env.BASE_URL}assets/${gif.file}`
       img.onload = () => {
         loaded++
         setLoadedCount(loaded)
@@ -142,7 +142,7 @@ function App() {
     <div className="relative h-full w-full bg-black flex items-center justify-center overflow-hidden">
       {/* GIF with crossfade */}
       <img
-        src={`/assets/${displayGif.file}`}
+        src={`${import.meta.env.BASE_URL}assets/${displayGif.file}`}
         alt={displayGif.label}
         title={displayGif.label}
         className="absolute h-full w-auto object-contain transition-opacity duration-300 ease-in-out"
@@ -168,7 +168,7 @@ function App() {
           aria-label="Previous GIF"
         >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-            <path d="M15.75 19.5L8.25 12l7.5-7.5" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M15.75 19.5L8.25 12l7.5-7.5" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </button>
 
@@ -202,7 +202,7 @@ function App() {
           aria-label="Next GIF"
         >
           <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
-            <path d="M8.25 4.5l7.5 7.5-7.5 7.5" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round"/>
+            <path d="M8.25 4.5l7.5 7.5-7.5 7.5" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </button>
       </div>

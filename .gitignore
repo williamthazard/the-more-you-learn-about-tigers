@@ -25,3 +25,8 @@ dist-ssr
 
 # Claude
 .claude
+
+# Temp/test files
+compressed_gifs/
+optimized_gifs/
+public/assets/test.gif
