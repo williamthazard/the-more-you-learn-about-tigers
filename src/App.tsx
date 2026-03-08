@@ -38,6 +38,12 @@ function App() {
   const audioRef = useRef<HTMLAudioElement>(null)
   const preloadedImages = useRef<HTMLImageElement[]>([])
 
+  // Log title and author on mount
+  useEffect(() => {
+    console.log('the more you learn about tigers the more obvious tigers become and you start to see stripes everywhere')
+    console.log('Robert David Carey')
+  }, [])
+
   // Preload all images
   useEffect(() => {
     let loaded = 0
@@ -45,6 +51,7 @@ function App() {
       const img = new Image()
       img.src = `${R2_BASE_URL}/${gif.file}`
       img.onload = () => {
+        console.log(`Loaded: ${gif.label}`)
         loaded++
         setLoadedCount(loaded)
         if (loaded === GIFS.length) {
@@ -52,6 +59,7 @@ function App() {
         }
       }
       img.onerror = () => {
+        console.error(`Failed to load: ${gif.label}`)
         loaded++
         setLoadedCount(loaded)
         if (loaded === GIFS.length) {
@@ -65,6 +73,7 @@ function App() {
   const navigateTo = useCallback((newIndex: number) => {
     if (isTransitioning || newIndex === currentIndex) return
 
+    console.log(GIFS[newIndex].label)
     setIsTransitioning(true)
     setFadeIn(false)
 
