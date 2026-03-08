@@ -26,6 +26,9 @@ const GIFS = [
 
 const AUDIO_FILE = `${R2_BASE_URL}/0001_gran (1).mp3`
 
+const LOAD_TIMEOUT_MS = 30000 // 30 second timeout per attempt
+const MAX_RETRIES = 3
+
 function App() {
   const [currentIndex, setCurrentIndex] = useState(0)
   const [displayIndex, setDisplayIndex] = useState(0)
@@ -35,6 +38,7 @@ function App() {
   const [isLoading, setIsLoading] = useState(true)
   const [loadingComplete, setLoadingComplete] = useState(false)
   const [loadedCount, setLoadedCount] = useState(0)
+  const [failedAssets, setFailedAssets] = useState<string[]>([])
   const audioRef = useRef<HTMLAudioElement>(null)
   const preloadedImages = useRef<HTMLImageElement[]>([])
 
@@ -44,31 +48,97 @@ function App() {
     console.log('Robert David Carey')
   }, [])
 
-  // Preload all images
-  useEffect(() => {
-    let loaded = 0
-    preloadedImages.current = GIFS.map((gif) => {
-      const img = new Image()
-      img.src = `${R2_BASE_URL}/${gif.file}`
-      img.onload = () => {
-        console.log(`Loaded: ${gif.label}`)
-        loaded++
-        setLoadedCount(loaded)
-        if (loaded === GIFS.length) {
-          setLoadingComplete(true)
-        }
+  // Load a single image with retry and timeout
+  const loadImageWithRetry = useCallback((
+    gif: { file: string; label: string },
+    attempt: number,
+    onSuccess: (img: HTMLImageElement) => void,
+    onFailure: () => void
+  ) => {
+    const img = new Image()
+    let timeoutId: ReturnType<typeof setTimeout> | null = null
+    let settled = false
+
+    const cleanup = () => {
+      if (timeoutId) {
+        clearTimeout(timeoutId)
+        timeoutId = null
       }
-      img.onerror = () => {
-        console.error(`Failed to load: ${gif.label}`)
-        loaded++
-        setLoadedCount(loaded)
-        if (loaded === GIFS.length) {
-          setLoadingComplete(true)
-        }
+    }
+
+    const handleSuccess = () => {
+      if (settled) return
+      settled = true
+      cleanup()
+      console.log(`Loaded: ${gif.label}${attempt > 1 ? ` (attempt ${attempt})` : ''}`)
+      onSuccess(img)
+    }
+
+    const handleFailure = (reason: string) => {
+      if (settled) return
+      settled = true
+      cleanup()
+
+      if (attempt < MAX_RETRIES) {
+        console.warn(`${reason}: ${gif.label} (attempt ${attempt}/${MAX_RETRIES}), retrying...`)
+        // Exponential backoff: 1s, 2s, 4s
+        setTimeout(() => {
+          loadImageWithRetry(gif, attempt + 1, onSuccess, onFailure)
+        }, Math.pow(2, attempt - 1) * 1000)
+      } else {
+        console.error(`Failed to load after ${MAX_RETRIES} attempts: ${gif.label}`)
+        onFailure()
       }
-      return img
-    })
+    }
+
+    img.onload = handleSuccess
+    img.onerror = () => handleFailure('Load error')
+
+    // Set timeout for slow connections
+    timeoutId = setTimeout(() => {
+      handleFailure('Timeout')
+    }, LOAD_TIMEOUT_MS)
+
+    img.src = `${R2_BASE_URL}/${gif.file}`
+    return img
   }, [])
+
+  // Preload all images with retry logic
+  useEffect(() => {
+    let loadedSuccessfully = 0
+    let loadedTotal = 0
+    const failed: string[] = []
+    const images: HTMLImageElement[] = []
+
+    const checkComplete = () => {
+      if (loadedTotal === GIFS.length) {
+        preloadedImages.current = images
+        setFailedAssets(failed)
+        setLoadingComplete(true)
+      }
+    }
+
+    GIFS.forEach((gif, index) => {
+      const img = loadImageWithRetry(
+        gif,
+        1,
+        (loadedImg) => {
+          images[index] = loadedImg
+          loadedSuccessfully++
+          loadedTotal++
+          setLoadedCount(loadedTotal)
+          checkComplete()
+        },
+        () => {
+          failed.push(gif.label)
+          loadedTotal++
+          setLoadedCount(loadedTotal)
+          checkComplete()
+        }
+      )
+      images[index] = img
+    })
+  }, [loadImageWithRetry])
 
   const navigateTo = useCallback((newIndex: number) => {
     if (isTransitioning || newIndex === currentIndex) return
@@ -150,13 +220,43 @@ function App() {
         </div>
 
         {loadingComplete ? (
-          <button
-            onClick={() => { console.log(GIFS[0].label); setIsLoading(false) }}
-            className="bg-white/10 hover:bg-white/20 border border-white/30 rounded-full text-white text-lg tracking-widest lowercase transition-colors"
-            style={{ fontFamily: "'Roboto Mono', monospace", padding: '0.5rem 2rem' }}
-          >
-            begin
-          </button>
+          failedAssets.length > 0 ? (
+            <div className="flex flex-col items-center gap-6">
+              <div className="flex flex-col gap-2 text-center">
+                <p className="text-red-400 text-base" style={{ fontFamily: "'Roboto Mono', monospace" }}>
+                  {failedAssets.length} asset{failedAssets.length > 1 ? 's' : ''} failed to load
+                </p>
+                <p className="text-white/60 text-sm max-w-sm" style={{ fontFamily: "'Roboto Mono', monospace" }}>
+                  This may be due to a slow or unstable connection. Please refresh the page to try again.
+                </p>
+              </div>
+              <button
+                onClick={() => window.location.reload()}
+                className="bg-white/10 hover:bg-white/20 border border-white/30 rounded-full text-white text-lg tracking-widest lowercase transition-colors"
+                style={{ fontFamily: "'Roboto Mono', monospace", padding: '0.5rem 2rem' }}
+              >
+                refresh
+              </button>
+              <details className="text-white/40 text-xs" style={{ fontFamily: "'Roboto Mono', monospace" }}>
+                <summary className="cursor-pointer hover:text-white/60 transition-colors">
+                  show failed assets
+                </summary>
+                <ul className="mt-2 space-y-1">
+                  {failedAssets.map((label) => (
+                    <li key={label}>{label}</li>
+                  ))}
+                </ul>
+              </details>
+            </div>
+          ) : (
+            <button
+              onClick={() => { console.log(GIFS[0].label); setIsLoading(false) }}
+              className="bg-white/10 hover:bg-white/20 border border-white/30 rounded-full text-white text-lg tracking-widest lowercase transition-colors"
+              style={{ fontFamily: "'Roboto Mono', monospace", padding: '0.5rem 2rem' }}
+            >
+              begin
+            </button>
+          )
         ) : (
           <>
             <div className="w-64 md:w-96 h-2 bg-white/20 rounded-full overflow-hidden">
