@@ -107,8 +107,10 @@ function App() {
     if (audioRef.current) {
       if (isPlaying) {
         audioRef.current.pause()
+        console.log('Audio off')
       } else {
         audioRef.current.play()
+        console.log('Audio on')
       }
       setIsPlaying(!isPlaying)
     }
