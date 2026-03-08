@@ -65,4 +65,4 @@ src/
 ## Credits
 
 - **Artwork & Audio**: Robert David Carey
-- **Web Development**: Built by William Hazard with React and TypeScript
+- **Web Development**: William Hazard
