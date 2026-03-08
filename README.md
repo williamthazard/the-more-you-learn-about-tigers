@@ -1,10 +1,10 @@
 # the more you learn about tigers the more obvious tigers become and you start to see stripes everywhere
 
-An interactive web viewer for Robert David Carey's multimedia art piece featuring a series of animated GIFs with an accompanying audio track.
+An interactive web viewer for Robert David Carey's poem featuring a series of animated GIFs with an accompanying audio track.
 
 ## About the Work
 
-*the more you learn about tigers the more obvious tigers become and you start to see stripes everywhere* is a visual and audio piece by **Robert David Carey**. The work consists of 15 animated GIFs that can be navigated sequentially, accompanied by an audio track that loops continuously.
+*the more you learn about tigers the more obvious tigers become and you start to see stripes everywhere* is a poem by **Robert David Carey**. The work consists of 15 animated GIFs that can be navigated sequentially, accompanied by an audio track that loops continuously.
 
 ## Live Demo
 
