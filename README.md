@@ -1,73 +1,68 @@
-# React + TypeScript + Vite
+# The More You Learn About Tigers
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+An interactive web viewer for Robert David Carey's multimedia art piece featuring a series of animated GIFs with an accompanying audio track.
 
-Currently, two official plugins are available:
+## About the Work
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+*The More You Learn About Tigers* is a visual and audio piece by **Robert David Carey**. The work consists of 15 animated GIFs that can be navigated sequentially, accompanied by an ambient audio track that loops continuously.
 
-## React Compiler
+## Live Demo
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+[View the project](https://williamthazard.github.io/the-more-you-learn-about-tigers/)
 
-## Expanding the ESLint configuration
+## Features
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- Full-screen GIF viewer with smooth crossfade transitions
+- Background audio with play/pause control
+- Keyboard navigation (arrow keys to navigate, spacebar for audio)
+- Loading screen with progress indicator
+- Responsive design
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## Controls
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+| Action | Input |
+|--------|-------|
+| Previous GIF | Left Arrow or click ‹ button |
+| Next GIF | Right Arrow or click › button |
+| Play/Pause Audio | Spacebar or click ▶/⏸ button |
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## Technical Stack
+
+- **React 19** with TypeScript
+- **Vite** for build tooling
+- **Tailwind CSS** for styling
+- **Ionicons** for UI icons
+- **Cloudflare R2** for asset hosting
+- **GitHub Pages** for deployment
+
+## Development
+
+```bash
+# Install dependencies
+npm install
+
+# Run development server
+npm run dev
+
+# Build for production
+npm run build
+
+# Deploy to GitHub Pages
+npm run deploy
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Project Structure
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
 ```
+src/
+├── App.tsx        # Main GIF viewer component
+├── main.tsx       # React entry point
+├── index.css      # Tailwind styles
+├── icons.ts       # Ionicons setup
+└── ionicons.d.ts  # TypeScript declarations
+```
+
+## Credits
+
+- **Artwork & Audio**: Robert David Carey
+- **Web Development**: Built with React and TypeScript
