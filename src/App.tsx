@@ -141,8 +141,8 @@ function App() {
         {loadingComplete ? (
           <button
             onClick={() => setIsLoading(false)}
-            className="px-12 py-4 bg-white/10 hover:bg-white/20 border border-white/30 rounded-full text-white text-lg tracking-widest lowercase transition-colors"
-            style={{ fontFamily: "'Roboto Mono', monospace" }}
+            className="bg-white/10 hover:bg-white/20 border border-white/30 rounded-full text-white text-lg tracking-widest lowercase transition-colors"
+            style={{ fontFamily: "'Roboto Mono', monospace", padding: '0.5rem 2rem' }}
           >
             begin
           </button>
