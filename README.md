@@ -1,10 +1,10 @@
-# The More You Learn About Tigers
+# the more you learn about tigers the more obvious tigers become and you start to see stripes everywhere
 
 An interactive web viewer for Robert David Carey's multimedia art piece featuring a series of animated GIFs with an accompanying audio track.
 
 ## About the Work
 
-*The More You Learn About Tigers* is a visual and audio piece by **Robert David Carey**. The work consists of 15 animated GIFs that can be navigated sequentially, accompanied by an ambient audio track that loops continuously.
+*the more you learn about tigers the more obvious tigers become and you start to see stripes everywhere* is a visual and audio piece by **Robert David Carey**. The work consists of 15 animated GIFs that can be navigated sequentially, accompanied by an audio track that loops continuously.
 
 ## Live Demo
 
@@ -65,4 +65,4 @@ src/
 ## Credits
 
 - **Artwork & Audio**: Robert David Carey
-- **Web Development**: Built with React and TypeScript
+- **Web Development**: Built by William Hazard with React and TypeScript

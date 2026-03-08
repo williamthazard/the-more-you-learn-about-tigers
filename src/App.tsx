@@ -33,6 +33,7 @@ function App() {
   const [isTransitioning, setIsTransitioning] = useState(false)
   const [isPlaying, setIsPlaying] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
+  const [loadingComplete, setLoadingComplete] = useState(false)
   const [loadedCount, setLoadedCount] = useState(0)
   const audioRef = useRef<HTMLAudioElement>(null)
   const preloadedImages = useRef<HTMLImageElement[]>([])
@@ -47,14 +48,14 @@ function App() {
         loaded++
         setLoadedCount(loaded)
         if (loaded === GIFS.length) {
-          setTimeout(() => setIsLoading(false), 500)
+          setLoadingComplete(true)
         }
       }
       img.onerror = () => {
         loaded++
         setLoadedCount(loaded)
         if (loaded === GIFS.length) {
-          setTimeout(() => setIsLoading(false), 500)
+          setLoadingComplete(true)
         }
       }
       return img
@@ -127,19 +128,37 @@ function App() {
   // Loading screen
   if (isLoading) {
     return (
-      <div className="h-full w-full bg-black flex flex-col items-center justify-center gap-8">
-        <h1 className="text-white text-2xl md:text-4xl font-bold tracking-[0.2em] uppercase" style={{ fontFamily: "'Roboto Mono', monospace" }}>
-          Loading
-        </h1>
-        <div className="w-64 md:w-96 h-2 bg-white/20 rounded-full overflow-hidden">
-          <div
-            className="h-full bg-white transition-all duration-300 ease-out"
-            style={{ width: `${loadProgress}%` }}
-          />
+      <div className="h-full w-full bg-black flex flex-col items-center justify-center gap-8 px-6 text-center">
+        <div className="flex flex-col gap-2">
+          <h1 className="text-white text-xl md:text-3xl font-normal tracking-wide lowercase" style={{ fontFamily: "'Roboto Mono', monospace" }}>
+            the more you learn about tigers the more obvious tigers become and you start to see stripes everywhere
+          </h1>
+          <p className="text-white/60 text-sm md:text-base" style={{ fontFamily: "'Roboto Mono', monospace" }}>
+            Robert David Carey
+          </p>
         </div>
-        <p className="text-white/60 font-mono text-sm">
-          {loadedCount} / {GIFS.length}
-        </p>
+
+        {loadingComplete ? (
+          <button
+            onClick={() => setIsLoading(false)}
+            className="px-8 py-3 bg-white/10 hover:bg-white/20 border border-white/30 rounded-full text-white text-lg tracking-widest lowercase transition-colors"
+            style={{ fontFamily: "'Roboto Mono', monospace" }}
+          >
+            begin
+          </button>
+        ) : (
+          <>
+            <div className="w-64 md:w-96 h-2 bg-white/20 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-white transition-all duration-300 ease-out"
+                style={{ width: `${loadProgress}%` }}
+              />
+            </div>
+            <p className="text-white/60 font-mono text-sm">
+              {loadedCount} / {GIFS.length}
+            </p>
+          </>
+        )}
       </div>
     )
   }
