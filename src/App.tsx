@@ -128,7 +128,7 @@ function App() {
   if (isLoading) {
     return (
       <div className="h-full w-full bg-black flex flex-col items-center justify-center gap-8">
-        <h1 className="text-white text-2xl md:text-4xl font-black tracking-[0.2em] uppercase">
+        <h1 className="text-white text-2xl md:text-4xl font-bold tracking-[0.2em] uppercase" style={{ fontFamily: "'Roboto Mono', monospace" }}>
           Loading
         </h1>
         <div className="w-64 md:w-96 h-2 bg-white/20 rounded-full overflow-hidden">

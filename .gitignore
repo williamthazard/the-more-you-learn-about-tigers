@@ -30,3 +30,8 @@ dist-ssr
 compressed_gifs/
 optimized_gifs/
 public/assets/test.gif
+
+# Upload scripts
+upload-to-r2.sh
+retry-upload.sh
+appwrite.json
