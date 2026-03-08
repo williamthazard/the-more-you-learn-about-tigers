@@ -4,7 +4,7 @@ import { setupIcons } from './icons'
 // Initialize icons
 setupIcons()
 
-const R2_BASE_URL = 'https://pub-556801dc822848d9a7640aeecdd4d94b.r2.dev'
+const LOCAL_BASE_URL = `${import.meta.env.BASE_URL}assets`
 
 const GIFS = [
   { file: '0 [SIGNAL].gif', label: 'SIGNAL' },
@@ -24,7 +24,7 @@ const GIFS = [
   { file: '14 [WALKING].gif', label: 'WALKING' },
 ]
 
-const AUDIO_FILE = `${R2_BASE_URL}/0001_gran (1).mp3`
+const AUDIO_FILE = `${LOCAL_BASE_URL}/0001_gran (1).mp3`
 
 const LOAD_TIMEOUT_MS = 30000 // 30 second timeout per attempt
 const MAX_RETRIES = 3
@@ -99,7 +99,7 @@ function App() {
       handleFailure('Timeout')
     }, LOAD_TIMEOUT_MS)
 
-    img.src = `${R2_BASE_URL}/${gif.file}`
+    img.src = `${LOCAL_BASE_URL}/${gif.file}`
     return img
   }, [])
 
@@ -237,16 +237,20 @@ function App() {
               >
                 refresh
               </button>
-              <details className="text-white/40 text-xs" style={{ fontFamily: "'Roboto Mono', monospace" }}>
-                <summary className="cursor-pointer hover:text-white/60 transition-colors">
-                  show failed assets
-                </summary>
-                <ul className="mt-2 space-y-1">
-                  {failedAssets.map((label) => (
-                    <li key={label}>{label}</li>
-                  ))}
-                </ul>
-              </details>
+              <div className="relative">
+                <details className="text-white/40 text-xs" style={{ fontFamily: "'Roboto Mono', monospace" }}>
+                  <summary className="cursor-pointer hover:text-white/60 transition-colors">
+                    show failed assets
+                  </summary>
+                  <div className="absolute left-1/2 -translate-x-1/2 mt-2 w-max max-w-[90vw] z-10 bg-black/90 p-3 rounded border border-white/10">
+                    <ul className="space-y-1">
+                      {failedAssets.map((label) => (
+                        <li key={label}>{label}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </details>
+              </div>
             </div>
           ) : (
             <button
@@ -278,7 +282,7 @@ function App() {
     <div className="relative h-full w-full bg-black flex items-center justify-center overflow-hidden">
       {/* GIF with crossfade */}
       <img
-        src={`${R2_BASE_URL}/${displayGif.file}`}
+        src={`${LOCAL_BASE_URL}/${displayGif.file}`}
         alt={displayGif.label}
         title={displayGif.label}
         className="absolute h-full w-auto object-contain transition-opacity duration-300 ease-in-out"
