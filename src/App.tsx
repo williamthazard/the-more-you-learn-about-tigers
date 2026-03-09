@@ -299,7 +299,7 @@ function App() {
       />
 
       {/* Floating Controls - Bottom Right */}
-      <div className="fixed bottom-6 right-6 flex items-center gap-3 bg-black/70 backdrop-blur-sm px-5 py-3 rounded-full border border-white/20">
+      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 md:left-auto md:translate-x-0 md:right-6 flex items-center gap-3 bg-black/70 backdrop-blur-sm px-5 py-3 rounded-full border border-white/20">
         {/* Previous Button */}
         <button
           onClick={goToPrevious}
