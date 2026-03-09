@@ -32,8 +32,7 @@ An interactive web viewer for Robert David Carey's poem featuring a series of an
 - **Vite** for build tooling
 - **Tailwind CSS** for styling
 - **Ionicons** for UI icons
-- **Cloudflare R2** for asset hosting
-- **GitHub Pages** for deployment
+- **GitHub Pages** for hosting and deployment
 
 ## Development
 
@@ -46,10 +45,9 @@ npm run dev
 
 # Build for production
 npm run build
-
-# Deploy to GitHub Pages
-npm run deploy
 ```
+
+Deployment to GitHub Pages happens automatically via GitHub Actions when pushing to `main`.
 
 ## Project Structure
 
