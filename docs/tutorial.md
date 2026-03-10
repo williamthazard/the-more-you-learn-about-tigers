@@ -16,24 +16,25 @@
 8. [TypeScript Configuration](#8-typescript-configuration)
 9. [Setting Up Icons — `src/icons.ts` and `src/ionicons.d.ts`](#9-setting-up-icons--srciconstss-and-srcionicondts)
 10. [The Entry Point — `src/main.tsx`](#10-the-entry-point--srcmaintsx)
-11. [Your Assets — The `public/` Folder](#11-your-assets--the-public-folder)
-12. [The Main Component — `src/App.tsx`](#12-the-main-component--srcapptsx)
-    - [12.1 Imports and Setup](#121-imports-and-setup)
-    - [12.2 Data: the GIF list and audio file](#122-data-the-gif-list-and-audio-file)
-    - [12.3 Constants: timeouts and retries](#123-constants-timeouts-and-retries)
-    - [12.4 State: teaching React what to remember](#124-state-teaching-react-what-to-remember)
-    - [12.5 Refs: reaching outside of React](#125-refs-reaching-outside-of-react)
-    - [12.6 Loading images with retry logic](#126-loading-images-with-retry-logic)
-    - [12.7 Preloading all images on startup](#127-preloading-all-images-on-startup)
-    - [12.8 Navigation: moving between GIFs](#128-navigation-moving-between-GIFs)
-    - [12.9 Audio: play and pause](#129-audio-play-and-pause)
-    - [12.10 Keyboard shortcuts](#1210-keyboard-shortcuts)
-    - [12.11 The Loading Screen UI](#1211-the-loading-screen-ui)
-    - [12.12 The Main Viewer UI](#1212-the-main-viewer-ui)
-    - [12.13 The complete file](#1213-the-complete-file)
-13. [Running the App Locally](#13-running-the-app-locally)
-14. [Deploying to GitHub Pages](#14-deploying-to-github-pages)
-15. [What You've Learned](#15-what-youve-learned)
+11. [Preparing Your Assets — Compressing GIFs and Audio](#11-preparing-your-assets--compressing-gifs-and-audio)
+12. [Your Assets — The `public/` Folder](#12-your-assets--the-public-folder)
+13. [The Main Component — `src/App.tsx`](#13-the-main-component--srcapptsx)
+    - [13.1 Imports and Setup](#131-imports-and-setup)
+    - [13.2 Data: the GIF list and audio file](#132-data-the-gif-list-and-audio-file)
+    - [13.3 Constants: timeouts and retries](#133-constants-timeouts-and-retries)
+    - [13.4 State: teaching React what to remember](#134-state-teaching-react-what-to-remember)
+    - [13.5 Refs: reaching outside of React](#135-refs-reaching-outside-of-react)
+    - [13.6 Loading images with retry logic](#136-loading-images-with-retry-logic)
+    - [13.7 Preloading all images on startup](#137-preloading-all-images-on-startup)
+    - [13.8 Navigation: moving between GIFs](#138-navigation-moving-between-GIFs)
+    - [13.9 Audio: play and pause](#139-audio-play-and-pause)
+    - [13.10 Keyboard shortcuts](#1310-keyboard-shortcuts)
+    - [13.11 The Loading Screen UI](#1311-the-loading-screen-ui)
+    - [13.12 The Main Viewer UI](#1312-the-main-viewer-ui)
+    - [13.13 The complete file](#1313-the-complete-file)
+14. [Running the App Locally](#14-running-the-app-locally)
+15. [Deploying to GitHub Pages](#15-deploying-to-github-pages)
+16. [What You've Learned](#16-what-youve-learned)
 
 ---
 
@@ -96,7 +97,7 @@ You'll need:
 - **15 GIF files**, named `0 [SIGNAL].gif` through `14 [WALKING].gif`
 - **1 MP3 audio file**: `0001_gran (1).mp3`
 
-We'll place them in the right folder in [Chapter 11](#11-your-assets--the-public-folder). For now, set them aside.
+We'll place them in the right folder in [Chapter 12](#12-your-assets--the-public-folder). For now, set them aside.
 
 ---
 
@@ -488,7 +489,162 @@ This is the file that starts everything. It runs first when the browser loads yo
 
 ---
 
-## 11. Your Assets — The `public/` Folder
+## 11. Preparing Your Assets — Compressing GIFs and Audio
+
+The GIF and audio files that power this project didn't arrive ready for the web. Robert David Carey provided the raw, studio-quality originals:
+
+- **15 GIF files** at 1024×1024 pixels, 25fps — the largest single file was 217MB, and the total payload was approximately **2.7GB**
+- **1 WAV audio file** — 24-bit PCM, 48kHz stereo, completely uncompressed at **131MB**
+
+GitHub Pages has practical limits: individual files must be under 100MB, and the total repository shouldn't grow much beyond 1–2GB. More importantly, no user should have to download 2.7GB just to view a poem. The goal was to get the total payload down to something a browser could reasonably preload — ideally under 200MB — while preserving visual and audio quality.
+
+After optimization, the final assets weigh in at approximately **170MB** total: ~163MB of GIFs and ~7MB of audio. That's a **94% reduction** with no perceptible loss in quality at typical screen sizes.
+
+### Installing ffmpeg
+
+All the compression work is done with **ffmpeg** — a free, open-source command-line tool for processing audio and video. Install it before proceeding.
+
+**macOS (using Homebrew):**
+```bash
+brew install ffmpeg
+```
+
+**Windows:** Download from [ffmpeg.org/download.html](https://ffmpeg.org/download.html) and follow the installation instructions.
+
+**Ubuntu/Debian Linux:**
+```bash
+sudo apt-get install ffmpeg
+```
+
+Verify it's installed:
+```bash
+ffmpeg -version
+```
+
+### 11.1 Converting the audio: WAV to MP3
+
+This is the simplest step. One command does it:
+
+```bash
+ffmpeg -i "0001_gran (1).wav" "0001_gran (1).mp3"
+```
+
+- `-i "0001_gran (1).wav"` — specifies the input file
+- `"0001_gran (1).mp3"` — specifies the output; ffmpeg infers the format from the file extension
+
+ffmpeg encodes the file using its default MP3 settings (variable bitrate, targeting ~128kbps). The result: **7.3MB** — down from 131MB. A 94% reduction with no audible quality loss for a background audio track.
+
+> **Why WAV vs. MP3?** WAV stores every audio sample as raw numeric data — no compression, no quality tradeoff, but enormous files. MP3 uses *perceptual encoding*: it analyzes what the human ear is sensitive to, then discards information the listener is unlikely to notice. The codec was designed specifically for this tradeoff, and at reasonable bitrates the difference is genuinely difficult to hear.
+
+### 11.2 Compressing the GIFs: the two-pass approach
+
+GIF compression is more involved. The GIF format is old — designed in 1987 — and its color model is primitive: each frame can display at most **256 colors** chosen from a palette. At 1024×1024 pixels and 25fps, with a generic palette and full-frame redraws, files balloon to hundreds of megabytes each.
+
+To compress these GIFs well, we need to solve several problems simultaneously:
+
+1. Reduce the resolution (1024px → 640px)
+2. Reduce the frame rate (25fps → 20fps)
+3. Build a *custom* color palette tuned to the actual colors in each specific GIF
+4. Apply dithering to simulate more colors than the palette technically allows
+5. Only write the pixels that actually *changed* from the previous frame
+
+ffmpeg can do all five in one command — but it requires a technique called a **filtergraph** with two passes:
+
+```bash
+ffmpeg -i "input.gif" \
+  -filter_complex \
+    "[0:v] split [a][b]; \
+     [a] fps=20,scale=640:-1,palettegen=max_colors=128:stats_mode=diff [p]; \
+     [b] fps=20,scale=640:-1 [b_scaled]; \
+     [b_scaled][p] paletteuse=dither=bayer:bayer_scale=5:diff_mode=rectangle" \
+  -loop 0 \
+  "output.gif"
+```
+
+(The backslashes break the command across lines for readability — you can write it as one long line.)
+
+### 11.3 What every flag does
+
+Let's decode this command piece by piece.
+
+**`-i "input.gif"`** — The input file.
+
+**`-filter_complex "..."`** — Activates ffmpeg's filtergraph engine. A filtergraph lets you build a pipeline of video filters that can branch, merge, and process streams in parallel. The string inside the quotes describes that pipeline.
+
+**`[0:v] split [a][b]`** — Take the video stream from input file 0 (`[0:v]`), and split it into two identical copies: `[a]` and `[b]`. We need two copies because we're doing two passes — one to *analyze* the colors and generate a palette, one to *apply* that palette to the actual frames.
+
+**Pass 1 — Building the custom palette:**
+
+`[a] fps=20,scale=640:-1,palettegen=max_colors=128:stats_mode=diff [p]`
+
+- `fps=20` — Reduces the frame rate to 20 frames per second. Slightly fewer frames means fewer bytes to store.
+- `scale=640:-1` — Scales the width to 640 pixels. The `-1` tells ffmpeg to calculate the height automatically to preserve the aspect ratio. (These GIFs are square, so the output is 640×640.)
+- `palettegen=max_colors=128:stats_mode=diff` — Analyzes all the frames and generates a custom color palette with up to 128 colors.
+  - `max_colors=128` — Uses 128 colors instead of the GIF maximum of 256. Halving the palette saves space, and a well-chosen 128-color palette often looks nearly as good as 256 for the content these GIFs contain.
+  - `stats_mode=diff` — Instead of sampling colors from every pixel in every frame equally, this mode focuses color allocation on the *pixels that change between frames*. Moving elements get more of the color budget; static backgrounds (which won't be fully redrawn anyway, thanks to `diff_mode=rectangle`) get less.
+- `[p]` — The output of this filter chain is the generated palette, labeled `[p]`.
+
+**Pass 2 — Scaling the frames and applying the palette:**
+
+`[b] fps=20,scale=640:-1 [b_scaled]`
+
+Take the second copy of the video `[b]`, apply the same frame rate reduction and scaling as pass 1, and label it `[b_scaled]`.
+
+`[b_scaled][p] paletteuse=dither=bayer:bayer_scale=5:diff_mode=rectangle`
+
+Take the scaled frames `[b_scaled]` and the palette `[p]`, and encode the final GIF:
+
+- `dither=bayer` — Applies **Bayer dithering**. A GIF frame can only display 128 colors, but with dithering, adjacent pixels of different palette colors are arranged in a regular pattern that tricks the eye into perceiving intermediate colors. Bayer dithering uses a mathematically predictable checkerboard-like pattern that also happens to compress well.
+- `bayer_scale=5` — Controls the coarseness of the Bayer pattern (values 1–5). Higher values create a more visible texture that can represent a wider range of apparent color; lower values are subtler but cover less ground. Scale 5 was the sweet spot for these GIFs — enough to smooth color gradients without looking visibly grainy.
+- `diff_mode=rectangle` — A critical file-size optimization. GIF supports *frame differencing*: instead of storing a complete image for every frame, you can store only the rectangular region of pixels that changed from the previous frame. This flag tells ffmpeg to compute the minimal bounding box of changed pixels for each frame and only write that region. For GIFs with large static areas or slow movement, this dramatically reduces file size.
+
+**`-loop 0`** — Makes the output GIF loop infinitely. `0` means "loop forever."
+
+**`"output.gif"`** — The output file.
+
+### 11.4 Processing all 15 GIFs in a loop
+
+Running the command 15 times manually would be tedious. Use a shell `for` loop to process every GIF in a directory:
+
+```bash
+mkdir -p output_gifs
+
+for f in input_gifs/*.gif; do
+  filename=$(basename "$f")
+  ffmpeg -i "$f" \
+    -filter_complex \
+      "[0:v] split [a][b]; \
+       [a] fps=20,scale=640:-1,palettegen=max_colors=128:stats_mode=diff [p]; \
+       [b] fps=20,scale=640:-1 [b_scaled]; \
+       [b_scaled][p] paletteuse=dither=bayer:bayer_scale=5:diff_mode=rectangle" \
+    -loop 0 \
+    "output_gifs/$filename"
+done
+```
+
+- `mkdir -p output_gifs` — Creates an `output_gifs` folder. The `-p` flag means "don't error if it already exists."
+- `for f in input_gifs/*.gif` — Iterates over every `.gif` file in the `input_gifs` directory, assigning each path to the variable `$f`.
+- `filename=$(basename "$f")` — Extracts just the filename from the full path. `basename` strips the directory prefix, so `input_gifs/1 [MAINSTREAM].gif` becomes `1 [MAINSTREAM].gif`.
+- The ffmpeg command runs with each file in turn and writes the compressed output to `output_gifs/` with the same filename.
+
+Run this from whatever directory contains your `input_gifs/` folder. When it finishes, `output_gifs/` will contain all 15 compressed GIFs ready for `public/assets/`.
+
+> **How long does this take?** Each GIF takes 1–5 minutes to process depending on its length and your hardware — the two-pass palette approach is computationally intensive. Expect the full batch to take 20–60 minutes. This is a one-time cost.
+
+### 11.5 The results
+
+| | Before | After |
+|---|---|---|
+| Largest single GIF | 217 MB | ~15 MB |
+| Total GIF payload | ~2,700 MB | ~163 MB |
+| Audio file | 131 MB (WAV) | 7.3 MB (MP3) |
+| **Total** | **~2,831 MB** | **~170 MB** |
+
+The 170MB total sits comfortably within GitHub's limits (files must be under 100MB each; repositories can be up to ~2GB). And it's a reasonable payload for a browser to preload over a typical connection — which is exactly why the app has a loading screen with a progress bar.
+
+---
+
+## 12. Your Assets — The `public/` Folder
 
 Inside your project, create the directory `public/assets/`. This is where the GIFs and audio file will live.
 
@@ -522,13 +678,13 @@ public/assets/
 
 ---
 
-## 12. The Main Component — `src/App.tsx`
+## 13. The Main Component — `src/App.tsx`
 
 This is the heart of the application — about 340 lines of TypeScript and JSX. We'll build it piece by piece so every line makes sense. Create `src/App.tsx` and we'll fill it in section by section.
 
 ---
 
-### 12.1 Imports and Setup
+### 13.1 Imports and Setup
 
 At the very top of `App.tsx`:
 
@@ -548,7 +704,7 @@ setupIcons()
 
 ---
 
-### 12.2 Data: the GIF list and audio file
+### 13.2 Data: the GIF list and audio file
 
 ```typescript
 const LOCAL_BASE_URL = `${import.meta.env.BASE_URL}assets`
@@ -584,7 +740,7 @@ const AUDIO_FILE = `${LOCAL_BASE_URL}/0001_gran (1).mp3`
 
 ---
 
-### 12.3 Constants: timeouts and retries
+### 13.3 Constants: timeouts and retries
 
 ```typescript
 const LOAD_TIMEOUT_MS = 30000 // 30 second timeout per attempt
@@ -595,7 +751,7 @@ These are named constants for the loading logic. Using named constants rather th
 
 ---
 
-### 12.4 State: teaching React what to remember
+### 13.4 State: teaching React what to remember
 
 Now we define the `App` function — the React component itself:
 
@@ -640,7 +796,7 @@ Let's look at each piece of state:
 
 ---
 
-### 12.5 Refs: reaching outside of React
+### 13.5 Refs: reaching outside of React
 
 ```typescript
   const audioRef = useRef<HTMLAudioElement>(null)
@@ -659,7 +815,7 @@ Let's look at each piece of state:
 
 ---
 
-### 12.6 Loading images with retry logic
+### 13.6 Loading images with retry logic
 
 This is one of the more complex functions in the app. It loads a single image, and if it fails, retries with increasing delays.
 
@@ -756,7 +912,7 @@ Let's walk through this carefully:
 
 ---
 
-### 12.7 Preloading all images on startup
+### 13.7 Preloading all images on startup
 
 ```typescript
   useEffect(() => {
@@ -813,7 +969,7 @@ The second argument `[loadImageWithRetry]` is the **dependency array**. React ru
 
 ---
 
-### 12.8 Navigation: moving between GIFs
+### 13.8 Navigation: moving between GIFs
 
 ```typescript
   const navigateTo = useCallback((newIndex: number) => {
@@ -871,7 +1027,7 @@ The `? :` syntax is a *ternary operator* — a compact if/else: `condition ? val
 
 ---
 
-### 12.9 Audio: play and pause
+### 13.9 Audio: play and pause
 
 ```typescript
   const toggleAudio = useCallback(() => {
@@ -896,7 +1052,7 @@ The `? :` syntax is a *ternary operator* — a compact if/else: `condition ? val
 
 ---
 
-### 12.10 Keyboard shortcuts
+### 13.10 Keyboard shortcuts
 
 ```typescript
   useEffect(() => {
@@ -929,7 +1085,7 @@ The `? :` syntax is a *ternary operator* — a compact if/else: `condition ? val
 
 ---
 
-### 12.11 The Loading Screen UI
+### 13.11 The Loading Screen UI
 
 React components return JSX — a description of what to render. Our `App` component has two possible outputs depending on state.
 
@@ -1083,7 +1239,7 @@ The outer div is the "track" (semi-transparent, fixed width). The inner div is t
 
 ---
 
-### 12.12 The Main Viewer UI
+### 13.12 The Main Viewer UI
 
 If `isLoading` is false, we return the main viewer. Add this after the loading screen `if` block:
 
@@ -1217,7 +1373,7 @@ The icon changes based on state. When audio is playing, show a pause icon. When 
 
 ---
 
-### 12.13 The complete file
+### 13.13 The complete file
 
 Here is `src/App.tsx` in full, for reference:
 
@@ -1569,7 +1725,7 @@ export default App
 
 ---
 
-## 13. Running the App Locally
+## 14. Running the App Locally
 
 With all files in place, start the development server:
 
@@ -1596,7 +1752,7 @@ To stop the server, press `Ctrl+C` in the terminal.
 
 ---
 
-## 14. Deploying to GitHub Pages
+## 15. Deploying to GitHub Pages
 
 ### Setting up your GitHub repository
 
@@ -1727,7 +1883,7 @@ Every future `git push` to `main` will automatically rebuild and redeploy.
 
 ---
 
-## 15. What You've Learned
+## 16. What You've Learned
 
 Congratulations — you've built and deployed a real web application. Let's take stock of what you now understand:
 
