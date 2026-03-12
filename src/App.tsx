@@ -7,20 +7,19 @@ setupIcons()
 const LOCAL_BASE_URL = `${import.meta.env.BASE_URL}assets`
 
 const GIFS = [
-  { file: '0 [SIGNAL].gif', label: 'SIGNAL' },
   { file: '1 [MAINSTREAM].gif', label: 'MAINSTREAM' },
   { file: '2 [RUSSIA].gif', label: 'RUSSIA' },
   { file: '3 [ASK].gif', label: 'ASK' },
   { file: '4 [BOARD].gif', label: 'BOARD' },
   { file: '5 [MEDIA].gif', label: 'MEDIA' },
   { file: '6 [SABOTEUR].gif', label: 'SABOTEUR' },
-  { file: '7 [NO CHOICE].gif', label: 'NO CHOICE' },
-  { file: '8 [PROBLEM].gif', label: 'PROBLEM' },
-  { file: '9 [YEARS].gif', label: 'YEARS' },
-  { file: '10 [INFLUENCE].gif', label: 'INFLUENCE' },
-  { file: '11 [SAD].gif', label: 'SAD' },
-  { file: '12 [ANGRY].gif', label: 'ANGRY' },
-  { file: '13 [UTTER].gif', label: 'UTTER' },
+  { file: '7 [UTTER].gif', label: 'UTTER' },
+  { file: '8 [NO CHOICE].gif', label: 'NO CHOICE' },
+  { file: '9 [PROBLEM].gif', label: 'PROBLEM' },
+  { file: '10 [SIGNAL].gif', label: 'SIGNAL' },
+  { file: '11 [YEARS].gif', label: 'YEARS' },
+  { file: '12 [SAD].gif', label: 'SAD' },
+  { file: '13 [ANGRY].gif', label: 'ANGRY' },
   { file: '14 [WALKING].gif', label: 'WALKING' },
 ]
 
